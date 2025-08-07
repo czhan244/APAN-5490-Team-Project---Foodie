@@ -1,4 +1,5 @@
-# Foodie - 美食分享应用
+# APAN-5490-Team-Project---Foodie
+A full-stack recipe sharing platform built for the APAN 5490 team project, with planned extensions for food detection, barcode-based search, and personalized health filtering.
 
 一个基于React + Node.js + MongoDB的全栈美食分享平台。
 
@@ -76,3 +77,4 @@ npm start
 - 前端开发
 - 后端开发
 - 数据库设计 
+
