@@ -1,0 +1,89 @@
+.create-recipe {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.create-recipe h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2.5rem;
+}
+
+.recipe-form {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.ingredients-section,
+.instructions-section {
+  margin: 30px 0;
+}
+
+.ingredients-section h3,
+.instructions-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 2px solid #ff6b6b;
+  padding-bottom: 10px;
+}
+
+.ingredient-row,
+.instruction-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.ingredient-row input,
+.instruction-row textarea {
+  flex: 1;
+}
+
+.remove-btn {
+  padding: 8px 15px;
+  font-size: 14px;
+  min-width: 80px;
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .ingredient-row,
+  .instruction-row {
+    flex-direction: column;
+  }
+  
+  .remove-btn {
+    align-self: flex-end;
+  }
+} 
