@@ -3,13 +3,13 @@ const router = express.Router();
 const { register, login, getMe } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
-// 注册
+// Register
 router.post('/register', register);
 
-// 登录
+// Login
 router.post('/login', login);
 
-// 获取当前用户信息
+// Get current user
 router.get('/me', protect, getMe);
 
 module.exports = router; 

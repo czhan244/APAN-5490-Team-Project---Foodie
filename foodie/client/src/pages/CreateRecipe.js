@@ -12,7 +12,7 @@ const CreateRecipe = () => {
     instructions: [''],
     cookingTime: '',
     servings: '',
-    difficulty: '中等',
+    difficulty: 'Medium',
     cuisine: '',
     tags: ''
   });
@@ -91,7 +91,7 @@ const CreateRecipe = () => {
 
       navigate('/');
     } catch (error) {
-      setError(error.response?.data?.message || '发布失败');
+      setError(error.response?.data?.message || 'Failed to publish');
     } finally {
       setLoading(false);
     }
@@ -130,7 +130,7 @@ const CreateRecipe = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="cookingTime">Cooking Time(minute) *</label>
+            <label htmlFor="cookingTime">Cooking Time (minutes) *</label>
             <input
               type="number"
               id="cookingTime"
@@ -143,7 +143,7 @@ const CreateRecipe = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="servings">Serving(person) *</label>
+            <label htmlFor="servings">Servings *</label>
             <input
               type="number"
               id="servings"
@@ -158,7 +158,7 @@ const CreateRecipe = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="difficulty">Difficulties *</label>
+            <label htmlFor="difficulty">Difficulty *</label>
             <select
               id="difficulty"
               name="difficulty"
@@ -186,7 +186,7 @@ const CreateRecipe = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="tags">Tags (separated by commas)</label>
+          <label htmlFor="tags">Tags (comma‑separated)</label>
           <input
             type="text"
             id="tags"
@@ -203,7 +203,7 @@ const CreateRecipe = () => {
             <div key={index} className="ingredient-row">
               <input
                 type="text"
-                placeholder="Ingredients Name"
+                placeholder="Ingredient name"
                 value={ingredient.name}
                 onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
                 required
@@ -226,16 +226,16 @@ const CreateRecipe = () => {
             </div>
           ))}
           <button type="button" onClick={addIngredient} className="btn btn-secondary">
-            Add Ingredients
+            Add Ingredient
           </button>
         </div>
 
         <div className="instructions-section">
-          <h3>Instruction *</h3>
+          <h3>Instructions *</h3>
           {formData.instructions.map((instruction, index) => (
             <div key={index} className="instruction-row">
               <textarea
-                placeholder={`Steps ${index + 1}`}
+                placeholder={`Step ${index + 1}`}
                 value={instruction}
                 onChange={(e) => handleInstructionChange(index, e.target.value)}
                 required
@@ -251,13 +251,13 @@ const CreateRecipe = () => {
             </div>
           ))}
           <button type="button" onClick={addInstruction} className="btn btn-secondary">
-            Add Steps
+            Add Step
           </button>
         </div>
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? '发布中...' : '发布菜谱'}
+            {loading ? 'Publishing...' : 'Publish Recipe'}
           </button>
         </div>
       </form>

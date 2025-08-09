@@ -10,22 +10,22 @@ const {
 } = require('../controllers/recipeController');
 const { protect } = require('../middleware/auth');
 
-// 获取所有菜谱
+// Get all recipes
 router.get('/', getRecipes);
 
-// 获取单个菜谱
+// Get one recipe
 router.get('/:id', getRecipeById);
 
-// 创建菜谱 (需要登录)
+// Create recipe (auth required)
 router.post('/', protect, createRecipe);
 
-// 更新菜谱 (需要登录)
+// Update recipe (auth required)
 router.put('/:id', protect, updateRecipe);
 
-// 删除菜谱 (需要登录)
+// Delete recipe (auth required)
 router.delete('/:id', protect, deleteRecipe);
 
-// 点赞/取消点赞菜谱 (需要登录)
+// Like/Unlike recipe (auth required)
 router.post('/:id/like', protect, likeRecipe);
 
 module.exports = router; 

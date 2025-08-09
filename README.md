@@ -1,80 +1,185 @@
-# APAN-5490-Team-Project---Foodie
-A full-stack recipe sharing platform built for the APAN 5490 team project, with planned extensions for food detection, barcode-based search, and personalized health filtering.
+# 🍽️ Foodie - APAN 5490 Team Project
 
-一个基于React + Node.js + MongoDB的全栈美食分享平台。
+**Foodie** is a full‑stack web application for discovering and sharing delicious recipes, designed to promote healthy eating through community content, smart search, and extensible health features. Built as a course project for Columbia University's APAN 5490.
 
-## 项目结构
+---
+
+## 🔍 Project Overview
+
+Foodie enables users to:
+- Share home‑cooked recipes with ingredients, steps, cuisine, tags, and difficulty
+- Search and filter recipes by keyword, cuisine, and difficulty
+- Like recipes and view detailed instructions
+- Authenticate with email/password and manage profile
+- Seed the database with demo data for quick testing
+
+Planned extensions:
+- Detect food items from uploaded images
+- Barcode‑based product/recipe lookup
+- Health filters (e.g., low‑sodium, high‑protein, calorie ranges)
+
+---
+
+## 💡 Key Features
+
+- 🧾 **Recipe Upload & Tagging**  
+  Create recipes with ingredients, steps, images (URL placeholder), cuisine, tags, servings, and cooking time.
+
+- 🔍 **Smart Search & Filters**  
+  Full‑text search on title/description/tags, plus cuisine and difficulty filters.
+
+- ❤️ **Likes & Detail View**  
+  Like/unlike recipes and view detailed instructions and metadata.
+
+- 👤 **User Auth**  
+  Email/password registration & login with JWT; profile endpoint.
+
+- 🧪 **Seed Data**  
+  One‑command database seeding with sample users and recipes.
+
+- 📸 **Food Detection** *(coming soon)*
+
+- 🔗 **Barcode Search** *(coming soon)*
+
+- ⚙️ **Health Filters** *(coming soon)*
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer        | Technology                          |
+|--------------|--------------------------------------|
+| Frontend     | React 18, React Router, Axios        |
+| Backend      | Node.js, Express.js                  |
+| Database     | MongoDB, Mongoose                    |
+| Tooling      | Nodemon, dotenv, bcryptjs, JWT       |
+| Dev Tools    | Git, GitHub, VS Code                 |
+
+---
+
+## 📁 Project Structure
 
 ```
 foodie/
-├── client/                 # 前端 React
+├── client/                 # React frontend
+│   ├── public/
 │   └── src/
-│       ├── pages/         # 页面组件
-│       ├── components/    # 可复用组件
-│       └── App.js         # 主应用组件
-├── server/                 # 后端 Node + Express
-│   ├── routes/            # 路由定义
-│   ├── controllers/       # 控制器逻辑
-│   └── models/            # 数据模型
-├── database/               # MongoDB 数据结构与样本数据
-└── README.md
+│       ├── components/
+│       ├── pages/
+│       ├── App.js
+│       └── ...
+├── server/                 # Node + Express backend
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── server.js
+│   └── package.json
+├── database/               # Seed scripts & sample data
+│   ├── init-db.js
+│   └── sample-data.js
+└── start.sh                # Convenience start script (optional)
 ```
 
-## 技术栈
+---
 
-### 前端
-- React 18
-- React Router
-- Axios
-- CSS3
+## 🚀 Getting Started
 
-### 后端
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
+### 1) Prerequisites
+- Node.js 16+ (tested with Node 24)
+- MongoDB Community (local) 8.x  
+  On macOS (Homebrew):
+  ```bash
+  brew tap mongodb/brew
+  brew install mongodb-community
+  brew services start mongodb/brew/mongodb-community
+  ```
 
-## 快速开始
-
-### 安装依赖
-
+### 2) Clone & Install
 ```bash
-# 安装后端依赖
+git clone https://github.com/czhan244/APAN-5490-Team-Project---Foodie.git
+cd APAN-5490-Team-Project---Foodie/foodie
+
+# Backend deps
 cd server
 npm install
 
-# 安装前端依赖
+# Frontend deps
 cd ../client
 npm install
 ```
 
-### 启动开发服务器
-
-```bash
-# 启动后端服务器 (端口 5000)
-cd server
-npm run dev
-
-# 启动前端开发服务器 (端口 3000)
-cd client
-npm start
+### 3) Configure Environment
+Create `foodie/server/.env` (or copy `env.example`):
+```env
+PORT=5001
+MONGO_URI=mongodb://localhost:27017/foodie
+JWT_SECRET=your_jwt_secret_key_here
+NODE_ENV=development
 ```
 
-### 数据库设置
+### 4) Seed the Database (optional, recommended)
+From `foodie/` directory:
+```bash
+node database/init-db.js
+```
+This creates sample users and recipes.
 
-确保MongoDB服务已启动，并在 `server/config/db.js` 中配置数据库连接。
+Sample accounts:
+- Admin: `admin@foodie.com` / `password`
+- User1: `user1@foodie.com` / `password`
+- User2: `user2@foodie.com` / `password`
 
-## 功能特性
+### 5) Run the App
+- Start backend (port 5001):
+  ```bash
+  cd server
+  npm run dev
+  ```
+- Start frontend (port 3000):
+  ```bash
+  cd ../client
+  npm start
+  ```
 
-- 用户注册/登录
-- 美食分享
-- 评论系统
-- 搜索功能
-- 用户个人资料
+Open:
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:5001`
 
-## 开发团队
+If port 3000 is in use, React will prompt to use another port.
 
-- 前端开发
-- 后端开发
-- 数据库设计 
+---
+
+## 🔌 API Overview (brief)
+
+Base URL: `http://localhost:5001`
+
+- `GET /` → Health check `{ message: "欢迎使用Foodie API" }`
+- `POST /api/auth/register` → Register
+- `POST /api/auth/login` → Login (returns JWT)
+- `GET /api/auth/me` → Current user (requires `Authorization: Bearer <token>`)
+- `GET /api/recipes` → List recipes (supports `search`, `cuisine`, `difficulty`, `page`, `limit`)
+- `GET /api/recipes/:id` → Recipe detail
+- `POST /api/recipes` → Create recipe (auth)
+- `PUT /api/recipes/:id` → Update recipe (owner)
+- `DELETE /api/recipes/:id` → Delete recipe (owner)
+- `POST /api/recipes/:id/like` → Like/unlike (auth)
+
+---
+
+## 🧭 Notes & Tips
+- If frontend shows proxy errors, ensure backend is running on `PORT=5001` and `client/package.json` has `"proxy": "http://localhost:5001"`.
+- Use `start.sh` for convenience start (may require `chmod +x start.sh`).
+- For a clean restart: stop background node processes and restart MongoDB if needed.
+
+---
+
+## 👥 Team
+APAN 5490 Team Project — Foodie
+
+---
+
+## 📄 License
+MIT (for course purposes) 
 

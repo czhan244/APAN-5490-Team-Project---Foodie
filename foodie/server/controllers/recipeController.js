@@ -1,6 +1,6 @@
 const Recipe = require('../models/Recipe');
 
-// @desc    获取所有菜谱
+// @desc    Get all recipes
 // @route   GET /api/recipes
 // @access  Public
 const getRecipes = async (req, res) => {
@@ -9,12 +9,12 @@ const getRecipes = async (req, res) => {
     
     let query = {};
     
-    // 搜索功能
+    // Text search
     if (search) {
       query.$text = { $search: search };
     }
     
-    // 筛选功能
+    // Filters
     if (cuisine) {
       query.cuisine = cuisine;
     }
@@ -38,12 +38,12 @@ const getRecipes = async (req, res) => {
       total
     });
   } catch (error) {
-    console.error('获取菜谱错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Get recipes error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    获取单个菜谱
+// @desc    Get one recipe by id
 // @route   GET /api/recipes/:id
 // @access  Public
 const getRecipeById = async (req, res) => {
@@ -53,17 +53,17 @@ const getRecipeById = async (req, res) => {
       .populate('likes', 'username');
     
     if (!recipe) {
-      return res.status(404).json({ message: '菜谱不存在' });
+      return res.status(404).json({ message: 'Recipe not found' });
     }
     
     res.json(recipe);
   } catch (error) {
-    console.error('获取菜谱详情错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Get recipe detail error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    创建菜谱
+// @desc    Create recipe
 // @route   POST /api/recipes
 // @access  Private
 const createRecipe = async (req, res) => {
@@ -78,12 +78,12 @@ const createRecipe = async (req, res) => {
     
     res.status(201).json(savedRecipe);
   } catch (error) {
-    console.error('创建菜谱错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Create recipe error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    更新菜谱
+// @desc    Update recipe
 // @route   PUT /api/recipes/:id
 // @access  Private
 const updateRecipe = async (req, res) => {
@@ -91,12 +91,12 @@ const updateRecipe = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
     
     if (!recipe) {
-      return res.status(404).json({ message: '菜谱不存在' });
+      return res.status(404).json({ message: 'Recipe not found' });
     }
     
-    // 检查权限
+    // Authorization
     if (recipe.author.toString() !== req.user.id) {
-      return res.status(401).json({ message: '无权限修改此菜谱' });
+      return res.status(401).json({ message: 'Not authorized to update this recipe' });
     }
     
     const updatedRecipe = await Recipe.findByIdAndUpdate(
@@ -107,12 +107,12 @@ const updateRecipe = async (req, res) => {
     
     res.json(updatedRecipe);
   } catch (error) {
-    console.error('更新菜谱错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Update recipe error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    删除菜谱
+// @desc    Delete recipe
 // @route   DELETE /api/recipes/:id
 // @access  Private
 const deleteRecipe = async (req, res) => {
@@ -120,23 +120,23 @@ const deleteRecipe = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
     
     if (!recipe) {
-      return res.status(404).json({ message: '菜谱不存在' });
+      return res.status(404).json({ message: 'Recipe not found' });
     }
     
-    // 检查权限
+    // Authorization
     if (recipe.author.toString() !== req.user.id) {
-      return res.status(401).json({ message: '无权限删除此菜谱' });
+      return res.status(401).json({ message: 'Not authorized to delete this recipe' });
     }
     
     await recipe.remove();
-    res.json({ message: '菜谱已删除' });
+    res.json({ message: 'Recipe deleted' });
   } catch (error) {
-    console.error('删除菜谱错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Delete recipe error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    点赞/取消点赞菜谱
+// @desc    Like / Unlike recipe
 // @route   POST /api/recipes/:id/like
 // @access  Private
 const likeRecipe = async (req, res) => {
@@ -144,24 +144,24 @@ const likeRecipe = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
     
     if (!recipe) {
-      return res.status(404).json({ message: '菜谱不存在' });
+      return res.status(404).json({ message: 'Recipe not found' });
     }
     
     const likeIndex = recipe.likes.indexOf(req.user.id);
     
     if (likeIndex > -1) {
-      // 取消点赞
+      // Unlike
       recipe.likes.splice(likeIndex, 1);
     } else {
-      // 点赞
+      // Like
       recipe.likes.push(req.user.id);
     }
     
     await recipe.save();
     res.json(recipe);
   } catch (error) {
-    console.error('点赞错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Like recipe error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 

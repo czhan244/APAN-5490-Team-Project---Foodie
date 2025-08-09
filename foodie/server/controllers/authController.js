@@ -1,27 +1,27 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// 生成JWT Token
+// Generate JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
 
-// @desc    用户注册
+// @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // 检查用户是否已存在
+    // Check if user exists
     const userExists = await User.findOne({ $or: [{ email }, { username }] });
     if (userExists) {
-      return res.status(400).json({ message: '用户已存在' });
+      return res.status(400).json({ message: 'User already exists' });
     }
 
-    // 创建新用户
+    // Create user
     const user = await User.create({
       username,
       email,
@@ -37,28 +37,28 @@ const register = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('注册错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Register error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    用户登录
+// @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 查找用户
+    // Find user
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: '邮箱或密码错误' });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // 验证密码
+    // Check password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: '邮箱或密码错误' });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     res.json({
@@ -68,12 +68,12 @@ const login = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    console.error('登录错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// @desc    获取当前用户信息
+// @desc    Get current user profile
 // @route   GET /api/auth/me
 // @access  Private
 const getMe = async (req, res) => {
@@ -81,8 +81,8 @@ const getMe = async (req, res) => {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
   } catch (error) {
-    console.error('获取用户信息错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('Get user error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
