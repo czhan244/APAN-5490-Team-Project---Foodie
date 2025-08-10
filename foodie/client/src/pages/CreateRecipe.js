@@ -14,6 +14,7 @@ const CreateRecipe = () => {
     servings: '',
     difficulty: 'Medium',
     cuisine: '',
+    cuisineOther: '',
     tags: ''
   });
   const [loading, setLoading] = useState(false);
@@ -78,8 +79,15 @@ const CreateRecipe = () => {
     }
 
     try {
+      // 处理 cuisine 字段
+      let finalCuisine = formData.cuisine;
+      if (formData.cuisine === 'Other' && formData.cuisineOther) {
+        finalCuisine = formData.cuisineOther;
+      }
+
       const recipeData = {
         ...formData,
+        cuisine: finalCuisine,
         ingredients: formData.ingredients.filter(ing => ing.name && ing.amount),
         instructions: formData.instructions.filter(instruction => instruction.trim()),
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
@@ -174,14 +182,48 @@ const CreateRecipe = () => {
 
           <div className="form-group">
             <label htmlFor="cuisine">Cuisine *</label>
-            <input
-              type="text"
+            <select
               id="cuisine"
               name="cuisine"
               value={formData.cuisine}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="">Select a cuisine...</option>
+              <option value="American">American</option>
+              <option value="Italian">Italian</option>
+              <option value="Chinese">Chinese</option>
+              <option value="Mexican">Mexican</option>
+              <option value="Indian">Indian</option>
+              <option value="French">French</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Thai">Thai</option>
+              <option value="Mediterranean">Mediterranean</option>
+              <option value="Greek">Greek</option>
+              <option value="Spanish">Spanish</option>
+              <option value="Korean">Korean</option>
+              <option value="Vietnamese">Vietnamese</option>
+              <option value="Middle Eastern">Middle Eastern</option>
+              <option value="African">African</option>
+              <option value="Caribbean">Caribbean</option>
+              <option value="Latin American">Latin American</option>
+              <option value="Fusion">Fusion</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Gluten-Free">Gluten-Free</option>
+              <option value="Other">Other (specify below)</option>
+            </select>
+            {formData.cuisine === 'Other' && (
+              <input
+                type="text"
+                name="cuisineOther"
+                placeholder="Please specify your cuisine..."
+                value={formData.cuisineOther || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, cuisineOther: e.target.value }))}
+                required
+                style={{ marginTop: '8px' }}
+              />
+            )}
           </div>
         </div>
 

@@ -9,7 +9,12 @@
     "seed:nhanes": "node ../database/seed/seed_nhanes.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["food", "recipe", "express", "mongodb"],
+  "keywords": [
+    "food",
+    "recipe",
+    "express",
+    "mongodb"
+  ],
   "author": "Foodie Team",
   "license": "MIT",
   "dependencies": {
@@ -26,4 +31,4 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
-} 
+}

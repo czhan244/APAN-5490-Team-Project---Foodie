@@ -158,6 +158,7 @@ const likeRecipe = async (req, res) => {
     }
     
     await recipe.save();
+    await recipe.populate('author', 'username avatar');
     res.json(recipe);
   } catch (error) {
     console.error('Like recipe error:', error);

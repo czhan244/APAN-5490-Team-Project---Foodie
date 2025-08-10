@@ -86,8 +86,46 @@ const getMe = async (req, res) => {
   }
 };
 
+// @desc    Delete user account
+// @route   DELETE /api/auth/delete-account
+// @access  Private
+const deleteAccount = async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    // Find user
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify password
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid password' });
+    }
+
+    // Delete user's recipes
+    const Recipe = require('../models/Recipe');
+    await Recipe.deleteMany({ author: req.user.id });
+
+    // Delete user's comments
+    const Comment = require('../models/Comment');
+    await Comment.deleteMany({ author: req.user.id });
+
+    // Delete user account
+    await User.findByIdAndDelete(req.user.id);
+
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
+  deleteAccount,
 }; 

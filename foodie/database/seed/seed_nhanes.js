@@ -3,8 +3,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const mongoose = require('mongoose');
-require('dotenv').config({ path: path.join(__dirname, '../../server/.env') });
+const mongoose = require(path.join(__dirname, '../../server/node_modules/mongoose'));
+require(path.join(__dirname, '../../server/node_modules/dotenv')).config({ path: path.join(__dirname, '../../server/.env') });
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/foodie';
 
