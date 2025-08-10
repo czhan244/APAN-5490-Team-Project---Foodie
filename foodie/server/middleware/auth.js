@@ -9,24 +9,24 @@ const protect = async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     try {
-      // 获取token
+      // Get token
       token = req.headers.authorization.split(' ')[1];
 
-      // 验证token
+      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // 获取用户信息
+      // Attach user
       req.user = await User.findById(decoded.id).select('-password');
 
       next();
     } catch (error) {
-      console.error('Token验证失败:', error);
-      res.status(401).json({ message: '未授权，token无效' });
+      console.error('Token verification failed:', error);
+      res.status(401).json({ message: 'Not authorized, invalid token' });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: '未授权，没有token' });
+    res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 

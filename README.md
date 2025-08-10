@@ -1,80 +1,284 @@
-# APAN-5490-Team-Project---Foodie
-A full-stack recipe sharing platform built for the APAN 5490 team project, with planned extensions for food detection, barcode-based search, and personalized health filtering.
+# 🍽️ Foodie - APAN 5490 Team Project
 
-一个基于React + Node.js + MongoDB的全栈美食分享平台。
+**Foodie** is a comprehensive full‑stack web application for discovering and sharing delicious recipes, designed to promote healthy eating through community content, smart search, and integrated health features. Built as a course project for Columbia University's APAN 5490.
 
-## 项目结构
+---
+
+## 👥 Team Members
+- **Cungang Zhang** 
+- **Xuanshuo Liu** 
+- **Liao Fang** 
+
+---
+
+## 🔍 Project Overview
+
+Foodie enables users to:
+- Share home‑cooked recipes with ingredients, steps, cuisine, tags, and difficulty
+- Search and filter recipes by keyword, cuisine, and difficulty
+- Like recipes and view detailed instructions
+- Authenticate with email/password and manage profile
+- Add reviews and ratings to recipes
+- View food safety recalls from FDA
+- Access nutrition benchmarks from NHANES
+- Delete account with data cleanup
+- Seed the database with comprehensive demo data
+
+---
+
+## 💡 Key Features
+
+### 🧾 **Recipe Management**
+- Create recipes with ingredients, steps, images, cuisine, tags, servings, and cooking time
+- Edit and delete your own recipes
+- View detailed recipe information with author details
+
+### 🔍 **Smart Search & Filters**
+- Full‑text search on title/description/tags
+- Filter by cuisine type (22+ options including custom)
+- Filter by difficulty level
+- Responsive grid layout with 3 cards per row
+
+### ❤️ **Social Features**
+- Like/unlike recipes with real-time updates
+- Add reviews and ratings (1-5 stars)
+- View recipe ratings and review counts
+- Like/unlike comments
+
+### 👤 **User Authentication & Profile**
+- Email/password registration & login with JWT
+- User profile management
+- Delete account with password verification
+- Automatic cleanup of user data (recipes, comments)
+
+### 🍎 **Health & Safety Features**
+- **Food Safety Recalls**: Real-time FDA food recall data with MongoDB caching
+- **Nutrition Benchmarks**: NHANES nutrition data for health comparisons
+- Smart cuisine selection with predefined options and custom input
+
+### 🧪 **Database & Data**
+- Comprehensive seed data with 10 recipes across multiple cuisines
+- 4 sample users with different roles
+- 9 sample reviews and ratings
+- One‑command database seeding
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer        | Technology                          |
+|--------------|--------------------------------------|
+| Frontend     | React 18, React Router, Axios, CSS3 |
+| Backend      | Node.js, Express.js, JWT, bcryptjs  |
+| Database     | MongoDB, Mongoose                    |
+| External APIs| OpenFDA (food recalls), NHANES      |
+| Tooling      | Nodemon, dotenv, node-fetch         |
+| Dev Tools    | Git, GitHub, VS Code, MongoDB Compass|
+
+---
+
+## 📁 Project Structure
 
 ```
 foodie/
-├── client/                 # 前端 React
+├── client/                 # React frontend
+│   ├── public/
 │   └── src/
-│       ├── pages/         # 页面组件
-│       ├── components/    # 可复用组件
-│       └── App.js         # 主应用组件
-├── server/                 # 后端 Node + Express
-│   ├── routes/            # 路由定义
-│   ├── controllers/       # 控制器逻辑
-│   └── models/            # 数据模型
-├── database/               # MongoDB 数据结构与样本数据
+│       ├── components/     # Header, Navigation
+│       ├── pages/          # Home, Recipe Detail, Create Recipe, etc.
+│       ├── App.js
+│       └── ...
+├── server/                 # Node + Express backend
+│   ├── config/            # Database connection
+│   ├── controllers/       # Auth, Recipe, Comment controllers
+│   ├── middleware/        # Authentication middleware
+│   ├── models/            # User, Recipe, Comment, NHANES models
+│   ├── routes/            # API routes
+│   ├── server.js
+│   └── package.json
+├── database/               # Seed scripts & sample data
+│   ├── init-db.js         # Database initialization
+│   ├── sample-data.js     # Sample users, recipes, comments
+│   └── seed/              # NHANES data seeding
+│       └── seed_nhanes.js
+├── scripts/                # Data processing scripts
+│   └── fetch_nhanes_dr1tot.py
 └── README.md
 ```
 
-## 技术栈
+---
 
-### 前端
-- React 18
-- React Router
-- Axios
-- CSS3
+## 🚀 Getting Started
 
-### 后端
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
+### 1) Prerequisites
+- Node.js 16+ (tested with Node 24)
+- MongoDB Community (local) 8.x  
+  On macOS (Homebrew):
+  ```bash
+  brew tap mongodb/brew
+  brew install mongodb-community
+  brew services start mongodb/brew/mongodb-community
+  ```
+- Python 3.x (for NHANES data processing)
 
-## 快速开始
-
-### 安装依赖
-
+### 2) Clone & Install
 ```bash
-# 安装后端依赖
+git clone https://github.com/czhan244/APAN-5490-Team-Project---Foodie.git
+cd APAN-5490-Team-Project---Foodie/foodie
+
+# Backend deps
 cd server
 npm install
 
-# 安装前端依赖
+# Frontend deps
 cd ../client
 npm install
 ```
 
-### 启动开发服务器
-
-```bash
-# 启动后端服务器 (端口 5000)
-cd server
-npm run dev
-
-# 启动前端开发服务器 (端口 3000)
-cd client
-npm start
+### 3) Configure Environment
+Create `foodie/server/.env`:
+```env
+PORT=5001
+MONGO_URI=mongodb://localhost:27017/foodie
+JWT_SECRET=your_jwt_secret_key_here
+NODE_ENV=development
 ```
 
-### 数据库设置
+### 4) Seed the Database
+From `foodie/` directory:
+```bash
+node database/init-db.js
+```
 
-确保MongoDB服务已启动，并在 `server/config/db.js` 中配置数据库连接。
+This creates:
+- 4 sample users
+- 10 recipes across multiple cuisines
+- 9 sample reviews and ratings
 
-## 功能特性
+Sample accounts:
+- Admin: `admin@foodie.com` / `password`
+- User1: `user1@foodie.com` / `password`
+- User2: `user2@foodie.com` / `password`
+- User3: `user3@foodie.com` / `password`
 
-- 用户注册/登录
-- 美食分享
-- 评论系统
-- 搜索功能
-- 用户个人资料
+### 5) Optional: Add NHANES Data
+```bash
+# Generate NHANES sample data
+python3 scripts/fetch_nhanes_dr1tot.py
 
-## 开发团队
+# Seed NHANES data to MongoDB
+cd server
+npm run seed:nhanes
+```
 
-- 前端开发
-- 后端开发
-- 数据库设计 
+### 6) Run the App
+- Start backend (port 5001):
+  ```bash
+  cd server
+  npm run dev
+  ```
+- Start frontend (port 3000):
+  ```bash
+  cd ../client
+  npm start
+  ```
+
+Open:
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:5001`
+
+---
+
+## 🔌 API Endpoints
+
+Base URL: `http://localhost:5001`
+
+### Authentication
+- `POST /api/auth/register` → Register new user
+- `POST /api/auth/login` → Login (returns JWT)
+- `GET /api/auth/me` → Get current user profile
+- `DELETE /api/auth/delete-account` → Delete user account
+
+### Recipes
+- `GET /api/recipes` → List recipes (supports search, cuisine, difficulty, pagination)
+- `GET /api/recipes/:id` → Get recipe detail
+- `POST /api/recipes` → Create new recipe
+- `PUT /api/recipes/:id` → Update recipe (owner only)
+- `DELETE /api/recipes/:id` → Delete recipe (owner only)
+- `POST /api/recipes/:id/like` → Like/unlike recipe
+
+### Comments & Reviews
+- `GET /api/comments/recipe/:recipeId` → Get recipe comments
+- `POST /api/comments` → Add comment/review
+- `DELETE /api/comments/:id` → Delete comment (owner only)
+- `POST /api/comments/:id/like` → Like/unlike comment
+
+### External Data
+- `GET /api/recalls` → Get FDA food recalls (cached)
+- `GET /api/nhanes/benchmarks` → Get NHANES nutrition data
+
+### Health Check
+- `GET /` → API health check
+
+---
+
+## 🗄️ Database Collections
+
+- **`users`** - User accounts and profiles
+- **`recipes`** - Recipe data with ingredients, instructions, metadata
+- **`comments`** - User reviews and ratings
+- **`food_recalls_cache`** - Cached FDA recall data (24h TTL)
+- **`nhanes_benchmarks`** - Nutrition benchmark data
+
+---
+
+## 🎨 UI Features
+
+- **Responsive Design**: Works on desktop, tablet, and mobile
+- **Fixed Header**: Navigation stays visible while scrolling
+- **Smart Cuisine Selection**: Dropdown with 22+ options + custom input
+- **Recipe Cards**: 3-column grid layout with consistent sizing
+- **Rating System**: Star ratings for recipes and reviews
+- **Real-time Updates**: Likes and comments update immediately
+
+---
+
+## 🔧 Development Notes
+
+### Key Features Implemented
+- ✅ User authentication with JWT
+- ✅ Recipe CRUD operations
+- ✅ Comment and rating system
+- ✅ Food safety recalls integration
+- ✅ Nutrition benchmarks integration
+- ✅ Account deletion with data cleanup
+- ✅ Responsive UI design
+- ✅ Comprehensive sample data
+
+### Performance Optimizations
+- MongoDB caching for external API data
+- Efficient database queries with proper indexing
+- Frontend state management for real-time updates
+
+### Security Features
+- Password hashing with bcryptjs
+- JWT token authentication
+- Input validation and sanitization
+- User authorization for protected operations
+
+---
+
+## 🚧 Future Enhancements
+
+- Image upload and food detection
+- Barcode-based product lookup
+- Advanced health filters
+- Recipe recommendations
+- Social sharing features
+- Mobile app development
+
+---
+
+## 📄 License
+MIT (for course purposes) 
 

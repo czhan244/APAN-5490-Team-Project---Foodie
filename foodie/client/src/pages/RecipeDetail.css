@@ -161,6 +161,132 @@
   font-size: 0.9rem;
 }
 
+/* Comments Section */
+.comments-section {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-top: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #333;
+  border-bottom: 2px solid #ff6b6b;
+  padding-bottom: 10px;
+}
+
+.add-comment-form {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.add-comment-form h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.no-comments {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
+.comment-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.comment-author {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.comment-rating {
+  font-size: 0.9rem;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #dc3545;
+  padding: 0;
+}
+
+.btn-delete:hover {
+  color: #c82333;
+}
+
+.comment-content {
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-like {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #666;
+  padding: 5px 10px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.btn-like:hover {
+  background: #f0f0f0;
+}
+
+.btn-like.liked {
+  color: #ff6b6b;
+}
+
 @media (max-width: 768px) {
   .recipe-header {
     grid-template-columns: 1fr;
@@ -181,5 +307,14 @@
   .recipe-meta {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .comment-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .comment-meta {
+    align-self: flex-end;
   }
 } 

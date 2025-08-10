@@ -21,6 +21,8 @@ const Header = () => {
           </Link>
           <nav className="nav">
             <Link to="/" className="nav-link">Home</Link>
+            <Link to="/food-recalls" className="nav-link">Food Safety</Link>
+            <Link to="/nutrition-benchmarks" className="nav-link">Nutrition</Link>
             {isAuthenticated ? (
               <>
                 <Link to="/create-recipe" className="nav-link">Share Recipe</Link>

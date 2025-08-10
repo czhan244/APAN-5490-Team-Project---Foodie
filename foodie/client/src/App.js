@@ -7,6 +7,8 @@ import Register from './pages/Register';
 import RecipeDetail from './pages/RecipeDetail';
 import CreateRecipe from './pages/CreateRecipe';
 import Profile from './pages/Profile';
+import FoodRecalls from './pages/FoodRecalls';
+import NutritionBenchmarks from './pages/NutritionBenchmarks';
 import './App.css';
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
             <Route path="/recipe/:id" element={<RecipeDetail />} />
             <Route path="/create-recipe" element={<CreateRecipe />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/food-recalls" element={<FoodRecalls />} />
+            <Route path="/nutrition-benchmarks" element={<NutritionBenchmarks />} />
           </Routes>
         </main>
       </div>

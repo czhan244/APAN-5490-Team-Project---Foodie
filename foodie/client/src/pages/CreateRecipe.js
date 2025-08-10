@@ -12,8 +12,9 @@ const CreateRecipe = () => {
     instructions: [''],
     cookingTime: '',
     servings: '',
-    difficulty: '中等',
+    difficulty: 'Medium',
     cuisine: '',
+    cuisineOther: '',
     tags: ''
   });
   const [loading, setLoading] = useState(false);
@@ -78,8 +79,15 @@ const CreateRecipe = () => {
     }
 
     try {
+      // 处理 cuisine 字段
+      let finalCuisine = formData.cuisine;
+      if (formData.cuisine === 'Other' && formData.cuisineOther) {
+        finalCuisine = formData.cuisineOther;
+      }
+
       const recipeData = {
         ...formData,
+        cuisine: finalCuisine,
         ingredients: formData.ingredients.filter(ing => ing.name && ing.amount),
         instructions: formData.instructions.filter(instruction => instruction.trim()),
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
@@ -91,7 +99,7 @@ const CreateRecipe = () => {
 
       navigate('/');
     } catch (error) {
-      setError(error.response?.data?.message || '发布失败');
+      setError(error.response?.data?.message || 'Failed to publish');
     } finally {
       setLoading(false);
     }
@@ -130,7 +138,7 @@ const CreateRecipe = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="cookingTime">Cooking Time(minute) *</label>
+            <label htmlFor="cookingTime">Cooking Time (minutes) *</label>
             <input
               type="number"
               id="cookingTime"
@@ -143,7 +151,7 @@ const CreateRecipe = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="servings">Serving(person) *</label>
+            <label htmlFor="servings">Servings *</label>
             <input
               type="number"
               id="servings"
@@ -158,7 +166,7 @@ const CreateRecipe = () => {
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="difficulty">Difficulties *</label>
+            <label htmlFor="difficulty">Difficulty *</label>
             <select
               id="difficulty"
               name="difficulty"
@@ -174,19 +182,53 @@ const CreateRecipe = () => {
 
           <div className="form-group">
             <label htmlFor="cuisine">Cuisine *</label>
-            <input
-              type="text"
+            <select
               id="cuisine"
               name="cuisine"
               value={formData.cuisine}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="">Select a cuisine...</option>
+              <option value="American">American</option>
+              <option value="Italian">Italian</option>
+              <option value="Chinese">Chinese</option>
+              <option value="Mexican">Mexican</option>
+              <option value="Indian">Indian</option>
+              <option value="French">French</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Thai">Thai</option>
+              <option value="Mediterranean">Mediterranean</option>
+              <option value="Greek">Greek</option>
+              <option value="Spanish">Spanish</option>
+              <option value="Korean">Korean</option>
+              <option value="Vietnamese">Vietnamese</option>
+              <option value="Middle Eastern">Middle Eastern</option>
+              <option value="African">African</option>
+              <option value="Caribbean">Caribbean</option>
+              <option value="Latin American">Latin American</option>
+              <option value="Fusion">Fusion</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Gluten-Free">Gluten-Free</option>
+              <option value="Other">Other (specify below)</option>
+            </select>
+            {formData.cuisine === 'Other' && (
+              <input
+                type="text"
+                name="cuisineOther"
+                placeholder="Please specify your cuisine..."
+                value={formData.cuisineOther || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, cuisineOther: e.target.value }))}
+                required
+                style={{ marginTop: '8px' }}
+              />
+            )}
           </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="tags">Tags (separated by commas)</label>
+          <label htmlFor="tags">Tags (comma‑separated)</label>
           <input
             type="text"
             id="tags"
@@ -203,7 +245,7 @@ const CreateRecipe = () => {
             <div key={index} className="ingredient-row">
               <input
                 type="text"
-                placeholder="Ingredients Name"
+                placeholder="Ingredient name"
                 value={ingredient.name}
                 onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
                 required
@@ -226,16 +268,16 @@ const CreateRecipe = () => {
             </div>
           ))}
           <button type="button" onClick={addIngredient} className="btn btn-secondary">
-            Add Ingredients
+            Add Ingredient
           </button>
         </div>
 
         <div className="instructions-section">
-          <h3>Instruction *</h3>
+          <h3>Instructions *</h3>
           {formData.instructions.map((instruction, index) => (
             <div key={index} className="instruction-row">
               <textarea
-                placeholder={`Steps ${index + 1}`}
+                placeholder={`Step ${index + 1}`}
                 value={instruction}
                 onChange={(e) => handleInstructionChange(index, e.target.value)}
                 required
@@ -251,13 +293,13 @@ const CreateRecipe = () => {
             </div>
           ))}
           <button type="button" onClick={addInstruction} className="btn btn-secondary">
-            Add Steps
+            Add Step
           </button>
         </div>
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? '发布中...' : '发布菜谱'}
+            {loading ? 'Publishing...' : 'Publish Recipe'}
           </button>
         </div>
       </form>

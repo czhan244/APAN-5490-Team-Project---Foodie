@@ -64,10 +64,29 @@ const createRecipes = async (users) => {
 // Create comments
 const createComments = async (users, recipes) => {
   try {
-    const commentsWithReferences = sampleComments.map((comment, index) => ({
-      ...comment,
-      author: users[index % users.length]._id,
-      recipe: recipes[index % recipes.length]._id
+    // Create mapping for user IDs
+    const userMap = {};
+    users.forEach((user, index) => {
+      userMap[`sample-user-id-${index + 1}`] = user._id;
+    });
+    // Add admin user
+    userMap['sample-user-id-1'] = users[0]._id; // admin
+    userMap['sample-user-id-2'] = users[1]._id; // user1
+    userMap['sample-user-id-3'] = users[2]._id; // user2
+    userMap['sample-user-id-4'] = users[3]._id; // user3
+
+    // Create mapping for recipe IDs
+    const recipeMap = {};
+    recipes.forEach((recipe, index) => {
+      recipeMap[`sample-recipe-id-${index + 1}`] = recipe._id;
+    });
+
+    const commentsWithReferences = sampleComments.map((comment) => ({
+      content: comment.content,
+      rating: comment.rating,
+      author: userMap[comment.author],
+      recipe: recipeMap[comment.recipe],
+      likes: comment.likes
     }));
     
     const comments = await Comment.insertMany(commentsWithReferences);
@@ -95,10 +114,18 @@ const initDatabase = async () => {
   console.log('  Admin: admin@foodie.com / password');
   console.log('  User1: user1@foodie.com / password');
   console.log('  User2: user2@foodie.com / password');
+  console.log('  User3: user3@foodie.com / password');
   console.log('\n🍽️  Sample recipes:');
   console.log('  - Classic Beef Burger');
   console.log('  - Spaghetti Carbonara');
   console.log('  - Chicken Tacos');
+  console.log('  - Kung Pao Chicken');
+  console.log('  - Butter Chicken');
+  console.log('  - Coq au Vin');
+  console.log('  - Sushi Rolls');
+  console.log('  - Pad Thai');
+  console.log('  - Greek Salad');
+  console.log('  - Tonkotsu Ramen');
   
   process.exit(0);
 };

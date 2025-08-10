@@ -1,1 +1,7 @@
 *.zip
+# raw big files
+database/seed/nhanes/raw_xpt/
+database/seed/nhanes/csv/
+*.xpt
+*.XPT
+*.parquet
