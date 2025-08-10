@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 密码加密中间件
+// Password encryption middleware
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
@@ -54,7 +54,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// 验证密码方法
+// Password verification method
 userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

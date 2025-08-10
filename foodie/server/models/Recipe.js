@@ -75,7 +75,7 @@ const recipeSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 索引
+// Indexes
 recipeSchema.index({ title: 'text', description: 'text', tags: 'text' });
 
 module.exports = mongoose.model('Recipe', recipeSchema); 

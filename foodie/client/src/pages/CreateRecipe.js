@@ -79,7 +79,7 @@ const CreateRecipe = () => {
     }
 
     try {
-      // 处理 cuisine 字段
+      // Handle cuisine field
       let finalCuisine = formData.cuisine;
       if (formData.cuisine === 'Other' && formData.cuisineOther) {
         finalCuisine = formData.cuisineOther;

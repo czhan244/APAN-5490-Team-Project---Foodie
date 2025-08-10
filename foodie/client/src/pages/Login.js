@@ -30,7 +30,7 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify(response.data));
       navigate('/');
     } catch (error) {
-      setError(error.response?.data?.message || '登录失败');
+      setError(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }

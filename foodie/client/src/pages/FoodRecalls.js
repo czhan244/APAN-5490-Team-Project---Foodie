@@ -6,13 +6,15 @@ const FoodRecalls = () => {
   const [recalls, setRecalls] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     limit: 10,
     state: '',
     since: ''
   });
 
-  const fetchRecalls = React.useCallback(async () => {
+  const fetchRecalls = React.useCallback(async (page = 1) => {
     setLoading(true);
     setError('');
     try {
@@ -20,9 +22,12 @@ const FoodRecalls = () => {
       if (filters.limit) params.append('limit', filters.limit);
       if (filters.state) params.append('state', filters.state);
       if (filters.since) params.append('since', filters.since);
+      params.append('page', page);
 
       const response = await axios.get(`/api/recalls?${params.toString()}`);
       setRecalls(response.data.results || []);
+      setTotalCount(response.data.count || 0);
+      setCurrentPage(page);
     } catch (err) {
       setError('Failed to fetch recall data');
       console.error('Error fetching recalls:', err);
@@ -45,8 +50,16 @@ const FoodRecalls = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchRecalls();
+    setCurrentPage(1);
+    fetchRecalls(1);
   };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    fetchRecalls(newPage);
+  };
+
+  const totalPages = Math.ceil(totalCount / filters.limit);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A';
@@ -165,6 +178,55 @@ const FoodRecalls = () => {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {!loading && recalls.length > 0 && totalPages > 1 && (
+        <div className="pagination">
+          <div className="pagination-info">
+            Showing {((currentPage - 1) * filters.limit) + 1} to {Math.min(currentPage * filters.limit, totalCount)} of {totalCount} results
+          </div>
+          <div className="pagination-controls">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="pagination-btn"
+            >
+              Previous
+            </button>
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`pagination-btn ${currentPage === pageNum ? 'active' : ''}`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="pagination-btn"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
