@@ -24,7 +24,7 @@ const RecipeDetail = () => {
       setRecipe(recipeResponse.data);
       setComments(commentsResponse.data);
       
-      // 检查当前用户是否已点赞
+      // Check if current user has liked
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       if (user._id) {
         setIsLiked(recipeResponse.data.likes.includes(user._id));

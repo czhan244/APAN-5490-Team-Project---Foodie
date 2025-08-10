@@ -27,7 +27,7 @@ const Register = () => {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('两次输入的密码不一致');
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -42,7 +42,7 @@ const Register = () => {
       localStorage.setItem('user', JSON.stringify(response.data));
       navigate('/');
     } catch (error) {
-      setError(error.response?.data?.message || '注册失败');
+      setError(error.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

@@ -4,23 +4,23 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 const COLLECTION = 'food_recalls_cache';
-const DEFAULT_TTL_HOURS = 24; // 缓存有效期
+const DEFAULT_TTL_HOURS = 24; // Cache expiration time in hours
 
 async function ensureIndexes(col) {
   try {
     await col.createIndex({ recall_number: 1 }, { unique: true });
   } catch (_) {}
   try {
-    // 基于 fetchedAt 的 TTL 索引，过期后自动清理
+    // TTL index based on fetchedAt, auto-cleanup after expiration
     await col.createIndex({ fetchedAt: 1 }, { expireAfterSeconds: DEFAULT_TTL_HOURS * 3600 });
   } catch (_) {}
   try {
-    // 常用查询组合（可选）
+    // Common query combinations (optional)
     await col.createIndex({ state: 1, report_date: -1 });
   } catch (_) {}
 }
 
-// 统一构建 OpenFDA URL
+// Build OpenFDA URL uniformly
 function buildOpenFdaUrl({ limit = 10, state, since }) {
   const base = 'https://api.fda.gov/food/enforcement.json';
   const params = new URLSearchParams();
@@ -32,44 +32,48 @@ function buildOpenFdaUrl({ limit = 10, state, since }) {
   return `${base}?${params.toString()}`;
 }
 
-// GET /api/recalls?limit=10&state=NY&since=20240101
-// 策略：优先读缓存，不足再请求 OpenFDA；把结果回写 Mongo（带 TTL）。
+// GET /api/recalls?limit=10&page=1&state=NY&since=20240101
+// Strategy: Read cache first, request OpenFDA if insufficient, write results back to Mongo (with TTL).
 router.get('/', async (req, res) => {
   try {
-    const { limit = 10, state, since } = req.query;
+    const { limit = 10, page = 1, state, since } = req.query;
     const nLimit = Number(limit) || 10;
+    const nPage = Number(page) || 1;
+    const skip = (nPage - 1) * nLimit;
 
     const col = mongoose.connection.collection(COLLECTION);
     await ensureIndexes(col);
 
-    // 读缓存
+    // Read from cache
     const cacheQuery = {};
     if (state) cacheQuery.state = String(state);
     if (since) cacheQuery.report_date = { $gte: String(since) };
 
+    const total = await col.countDocuments(cacheQuery).catch(() => 0);
+    
     const cached = await col
       .find(cacheQuery)
       .sort({ report_date: -1 })
+      .skip(skip)
       .limit(nLimit)
       .toArray();
 
-    if (cached.length >= nLimit) {
-      const total = await col.countDocuments(cacheQuery).catch(() => cached.length);
-      return res.json({ ok: true, count: total, results: cached });
+    if (cached.length >= nLimit || nPage === 1) {
+      return res.json({ ok: true, count: total, results: cached, page: nPage, totalPages: Math.ceil(total / nLimit) });
     }
 
-    // 缓存不足 → 请求 OpenFDA
+    // Cache insufficient → Request OpenFDA
     const url = buildOpenFdaUrl({ limit: nLimit, state, since });
     const r = await fetch(url);
     if (!r.ok) throw new Error(`OpenFDA API error: ${r.status} ${r.statusText}`);
     const data = await r.json();
     const results = Array.isArray(data?.results) ? data.results : [];
 
-    // 回写缓存（upsert by recall_number）
+    // Write back to cache (upsert by recall_number)
     const now = new Date();
     for (const item of results) {
       if (!item) continue;
-      const recallNo = item.recall_number || item.recallNumber; // 尝试兼容字段名
+      const recallNo = item.recall_number || item.recallNumber; // Try to handle different field names
       if (!recallNo) continue;
       await col.updateOne(
         { recall_number: String(recallNo) },
@@ -78,15 +82,15 @@ router.get('/', async (req, res) => {
       );
     }
 
-    // 合并结果：优先最新缓存
+    // Merge results: prioritize latest cache
     const merged = await col
       .find(cacheQuery)
       .sort({ report_date: -1 })
+      .skip(skip)
       .limit(nLimit)
       .toArray();
 
-    const total = await col.countDocuments(cacheQuery).catch(() => merged.length);
-    return res.json({ ok: true, count: total, results: merged });
+    return res.json({ ok: true, count: total, results: merged, page: nPage, totalPages: Math.ceil(total / nLimit) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, message: err.message });
