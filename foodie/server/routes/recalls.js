@@ -58,7 +58,13 @@ router.get('/', async (req, res) => {
       .limit(nLimit)
       .toArray();
 
-    if (cached.length >= nLimit || nPage === 1) {
+    // If we have enough cached data for this page, return it
+    if (cached.length >= nLimit) {
+      return res.json({ ok: true, count: total, results: cached, page: nPage, totalPages: Math.ceil(total / nLimit) });
+    }
+
+    // If this is page 1 and we have some data, return what we have
+    if (nPage === 1 && cached.length > 0) {
       return res.json({ ok: true, count: total, results: cached, page: nPage, totalPages: Math.ceil(total / nLimit) });
     }
 
@@ -90,7 +96,10 @@ router.get('/', async (req, res) => {
       .limit(nLimit)
       .toArray();
 
-    return res.json({ ok: true, count: total, results: merged, page: nPage, totalPages: Math.ceil(total / nLimit) });
+    // Update total count after caching new data
+    const updatedTotal = await col.countDocuments(cacheQuery).catch(() => total);
+
+    return res.json({ ok: true, count: updatedTotal, results: merged, page: nPage, totalPages: Math.ceil(updatedTotal / nLimit) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, message: err.message });
