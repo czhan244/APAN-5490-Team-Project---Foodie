@@ -1,3 +1,4 @@
+/* Header Component Styles */
 .header {
   position: fixed;
   top: 0;
@@ -38,6 +39,23 @@
 
 .nav-link:hover {
   color: #ff6b6b;
+}
+
+.user-profile {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.user-profile:hover {
+  background: linear-gradient(135deg, #ff5252, #ff7676);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+  color: white !important;
 }
 
 .logout-btn {
