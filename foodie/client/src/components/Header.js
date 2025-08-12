@@ -23,6 +23,7 @@ const Header = () => {
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/food-recalls" className="nav-link">Food Safety</Link>
             <Link to="/nutrition-benchmarks" className="nav-link">Nutrition</Link>
+            <Link to="/about" className="nav-link">About Us</Link>
             {isAuthenticated ? (
               <>
                 <Link to="/create-recipe" className="nav-link">Share Recipe</Link>
@@ -32,10 +33,7 @@ const Header = () => {
                 </button>
               </>
             ) : (
-              <>
-                <Link to="/login" className="nav-link">Login</Link>
-                <Link to="/register" className="nav-link">Register</Link>
-              </>
+              <Link to="/login" className="nav-link">Login</Link>
             )}
           </nav>
         </div>

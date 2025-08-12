@@ -9,6 +9,7 @@ import CreateRecipe from './pages/CreateRecipe';
 import Profile from './pages/Profile';
 import FoodRecalls from './pages/FoodRecalls';
 import NutritionBenchmarks from './pages/NutritionBenchmarks';
+import About from './pages/About';
 import './App.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/food-recalls" element={<FoodRecalls />} />
             <Route path="/nutrition-benchmarks" element={<NutritionBenchmarks />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </main>
       </div>

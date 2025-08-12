@@ -13,6 +13,11 @@ const RecipeDetail = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [newComment, setNewComment] = useState({ content: '', rating: 5 });
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [recallAlerts, setRecallAlerts] = useState([]);
+  const [nutritionInfo, setNutritionInfo] = useState(null);
+  const [showNutrition, setShowNutrition] = useState(false);
 
   const fetchRecipe = useCallback(async () => {
     try {
@@ -28,6 +33,25 @@ const RecipeDetail = () => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       if (user._id) {
         setIsLiked(recipeResponse.data.likes.includes(user._id));
+      }
+
+      // Fetch recall alerts
+      try {
+        const alertsResponse = await axios.get(`/api/recall-alerts/recipe/${id}`);
+        setRecallAlerts(alertsResponse.data.alerts || []);
+      } catch (error) {
+        console.error('Failed to fetch recall alerts:', error);
+      }
+
+      // Calculate nutrition info
+      try {
+        const nutritionResponse = await axios.post('/api/nutrition-calculator/recipe', {
+          ingredients: recipeResponse.data.ingredients,
+          servings: recipeResponse.data.servings
+        });
+        setNutritionInfo(nutritionResponse.data);
+      } catch (error) {
+        console.error('Failed to calculate nutrition:', error);
       }
     } catch (error) {
       setError('The recipe does not exist or has been deleted');
@@ -115,6 +139,30 @@ const RecipeDetail = () => {
     }
   };
 
+  const handleDeleteRecipe = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await axios.delete(`/api/recipes/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Redirect to home page after successful deletion
+      navigate('/', { state: { message: 'Recipe deleted successfully' } });
+    } catch (error) {
+      console.error('Failed to delete recipe:', error);
+      setError('Failed to delete recipe. Please try again.');
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   const handleLikeComment = async (commentId) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -136,11 +184,11 @@ const RecipeDetail = () => {
   };
 
   if (loading) {
-    return <div className="text-center">Loading...</div>;
+    return <div className="loading">Loading recipe...</div>;
   }
 
   if (error) {
-    return <div className="text-center error-message">{error}</div>;
+    return <div className="error">{error}</div>;
   }
 
   if (!recipe) {
@@ -157,19 +205,27 @@ const RecipeDetail = () => {
             <div className="placeholder-image">🍽️</div>
           )}
         </div>
+        
         <div className="recipe-info">
           <h1>{recipe.title}</h1>
           <p className="recipe-description">{recipe.description}</p>
+          
           <div className="recipe-meta">
-            <span>⏱️ {recipe.cookingTime} min</span>
-            <span>👥 {recipe.servings} servings</span>
-            <span>📊 {recipe.difficulty}</span>
-            <span>🍽️ {recipe.cuisine}</span>
+            <span className="meta-item">⏱️ {recipe.cookingTime} min</span>
+            <span className="meta-item">👥 {recipe.servings} servings</span>
+            <span className="meta-item">📊 {recipe.difficulty}</span>
+            <span className="meta-item">🌍 {recipe.cuisine}</span>
           </div>
+
+          <div className="recipe-rating">
+            <span className="stars">{'⭐'.repeat(Math.round(recipe.rating))}</span>
+            <span className="rating-text">{recipe.rating} ({recipe.reviewCount} reviews)</span>
+          </div>
+
           <div className="recipe-author">
-            <span>By: {recipe.author?.username || 'Unknown'}</span>
-            <span>Published: {new Date(recipe.createdAt).toLocaleDateString()}</span>
+            By {recipe.author?.username || 'Unknown'}
           </div>
+
           <div className="recipe-actions">
             <button 
               onClick={handleLike} 
@@ -177,9 +233,91 @@ const RecipeDetail = () => {
             >
               {isLiked ? '❤️ Liked' : '🤍 Like'} ({recipe.likes.length})
             </button>
+            
+            {/* Delete button - only show for recipe author */}
+            {recipe.author?._id === JSON.parse(localStorage.getItem('user') || '{}')._id && (
+              <button 
+                onClick={() => setShowDeleteConfirm(true)} 
+                className="btn btn-danger"
+                style={{ marginLeft: '10px' }}
+              >
+                🗑️ Delete Recipe
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Recall Alerts Section */}
+      {recallAlerts.length > 0 && (
+        <div className="recall-alerts-section">
+          <h2>⚠️ Food Safety Alert</h2>
+          <div className="alerts-container">
+            {recallAlerts.map((alert, index) => (
+              <div key={index} className="alert-card">
+                <div className="alert-header">
+                  <span className="alert-icon">🚨</span>
+                  <span className="alert-ingredient">{alert.ingredient}</span>
+                </div>
+                <div className="alert-details">
+                  <p><strong>Product:</strong> {alert.recallProduct}</p>
+                  <p><strong>Reason:</strong> {alert.reason}</p>
+                  <p><strong>Company:</strong> {alert.company}</p>
+                  <p><strong>Date:</strong> {new Date(alert.recallDate).toLocaleDateString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Nutrition Information */}
+      {nutritionInfo && (
+        <div className="nutrition-section">
+          <h2>Nutrition Information</h2>
+          <button 
+            onClick={() => setShowNutrition(!showNutrition)}
+            className="btn btn-secondary"
+          >
+            {showNutrition ? 'Hide' : 'Show'} Nutrition Details
+          </button>
+          
+          {showNutrition && (
+            <div className="nutrition-details">
+              <div className="nutrition-summary">
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Calories per serving:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.calories} cal</span>
+                </div>
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Protein:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.protein}g</span>
+                </div>
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Carbohydrates:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.carbs}g</span>
+                </div>
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Fat:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.fat}g</span>
+                </div>
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Fiber:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.fiber}g</span>
+                </div>
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Sugar:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.sugar}g</span>
+                </div>
+                <div className="nutrition-item">
+                  <span className="nutrition-label">Sodium:</span>
+                  <span className="nutrition-value">{nutritionInfo.perServing.sodium}mg</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="recipe-content">
         <div className="ingredients-section">
@@ -301,6 +439,32 @@ const RecipeDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Delete Recipe</h3>
+            <p>Are you sure you want to delete "{recipe.title}"? This action cannot be undone.</p>
+            <div className="modal-actions">
+              <button 
+                onClick={() => setShowDeleteConfirm(false)} 
+                className="btn btn-secondary"
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDeleteRecipe} 
+                className="btn btn-danger"
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting...' : 'Delete Recipe'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

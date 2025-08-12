@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
 
 const Home = () => {
+  const location = useLocation();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [difficulty, setDifficulty] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const hasLoaded = useRef(false);
   const fetchRecipes = async (search = searchTerm, cuisineFilter = cuisine, difficultyFilter = difficulty) => {
     setLoading(true);
@@ -33,7 +35,16 @@ const Home = () => {
       fetchRecipes();
       hasLoaded.current = true;
     }
-  }, []);
+    
+    // Check for success message from navigation state
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      // Clear the message after 5 seconds
+      setTimeout(() => setSuccessMessage(''), 5000);
+      // Clear the navigation state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -46,6 +57,12 @@ const Home = () => {
 
   return (
     <div className="home">
+      {successMessage && (
+        <div className="success-message">
+          {successMessage}
+        </div>
+      )}
+      
       <div className="hero">
         <h1>Discover Delicious Recipes</h1>
         <p>Explore amazing recipes from around the world</p>
@@ -115,6 +132,32 @@ const Home = () => {
             <div className="recipe-content">
               <h3>{recipe.title}</h3>
               <p>{recipe.description}</p>
+              
+              {/* Rating Display */}
+              <div className="recipe-rating">
+                <div className="stars">
+                  {recipe.rating > 0 ? (
+                    <>
+                      <span className="star-filled">{'⭐'.repeat(Math.floor(recipe.rating))}</span>
+                      {recipe.rating % 1 !== 0 && <span className="star-half">⭐</span>}
+                      <span className="star-empty">{'⭐'.repeat(5 - Math.ceil(recipe.rating))}</span>
+                    </>
+                  ) : (
+                    <span className="no-rating">No ratings yet</span>
+                  )}
+                </div>
+                <div className="rating-info">
+                  {recipe.rating > 0 ? (
+                    <>
+                      <span className="rating-score">{recipe.rating.toFixed(1)}</span>
+                      <span className="rating-count">({recipe.reviewCount} reviews)</span>
+                    </>
+                  ) : (
+                    <span className="rating-count">Be the first to rate!</span>
+                  )}
+                </div>
+              </div>
+              
               <div className="recipe-meta">
                 <span>⏱️ {recipe.cookingTime} min</span>
                 <span>👥 {recipe.servings} servings</span>
