@@ -20,6 +20,8 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/nhanes', require('./routes/nhanes'));
 app.use('/api/recalls', require('./routes/recalls'));
+app.use('/api/recall-alerts', require('./routes/recallAlerts'));
+app.use('/api/nutrition-calculator', require('./routes/nutritionCalculator'));
 
 // health
 app.get('/', (req, res) => {

@@ -1,4 +1,5 @@
 const Recipe = require('../models/Recipe');
+const Comment = require('../models/Comment');
 
 // @desc    Get all recipes
 // @route   GET /api/recipes
@@ -128,7 +129,12 @@ const deleteRecipe = async (req, res) => {
       return res.status(401).json({ message: 'Not authorized to delete this recipe' });
     }
     
-    await recipe.remove();
+    // Delete the recipe and all associated comments
+    await Promise.all([
+      Recipe.findByIdAndDelete(req.params.id),
+      Comment.deleteMany({ recipe: req.params.id })
+    ]);
+    
     res.json({ message: 'Recipe deleted' });
   } catch (error) {
     console.error('Delete recipe error:', error);
