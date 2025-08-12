@@ -16,7 +16,7 @@
 }
 
 .recipe-image {
-  height: 400px;
+  height: 350px;
   overflow: hidden;
 }
 
@@ -38,10 +38,10 @@
 }
 
 .recipe-info {
-  padding: 30px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .recipe-info h1 {
